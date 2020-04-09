@@ -1,0 +1,118 @@
+// file is a copy of a blog
+//All credit goes to the blog:
+//https://www.codetwo.com/admins-blog/start-remote-powershell-session-connect-exchange-office-365/
+
+
+//Connecting to the on-premises Exchange 2016
+
+To use PowerShell to connect to Exchange 2016:
+
+1. Start the PowerShell on the workstation.
+2. In the console, type the following command:
+
+ $Credentials = Get-Credential
+ 
+In the resulting window, provide administrative credentials.
+
+3. The next step is to run this command:
+
+ $Session = New-PSSession -ConfigurationName Microsoft.Exchange -ConnectionUri http://< Exchange 2016 Mailbox server FQDN>/PowerShell/ -Authentication Kerberos -Credential $Credentials
+
+Replace <Exchange 2016 Mailbox server FQDN> with the fully qualified domain name (FQDN) of Exchange 2016 you want to connect to.
+
+4. Then, enter this command:
+
+ Import-PSSession $Session
+ 
+This will connect to the Exchange Server and import all necessary administration cmdlets.
+
+You are now all set to go and manage your Exchange 2016 Server via PowerShell. 
+
+Once you have finished, make sure the remote session is removed. To disconnect the session, use this command:
+
+Remove-PSSession $Session
+
+
+//Connecting to the on-premises Exchange 2013
+
+To start the remote PowerShell session with Exchange 2013:
+
+1. Start the PowerShell console on the workstation.
+2. In the console enter the following command:
+
+$Credentials = Get-Credential
+
+This brings up a new window where you need to enter your administrative credentials.
+
+3. In the console enter another command:
+
+$Session = New-PSSession -ConfigurationName Microsoft.Exchange -ConnectionUri http://<Exchange 2013 CAS FQDN>/PowerShell/ -Authentication Kerberos -Credential $Credentials
+
+Replace the <Exchange 2013 CAS FQDN> part with the address of your CAS role server.
+
+4. The next command is:
+
+Import-PSSession $Session
+
+It connects to the Exchange Server and imports all necessary server administration cmdlets.
+
+You are now ready to manage your server with PowerShell.
+
+When you finish your work close and remove the remote connection session with the following command:
+
+Remove-PSSession $Session
+
+
+//Connecting to the Exchange Online and Office 365
+
+The procedure is quite similar to the one described earlier:
+
+1. Start the PowerShell console on the workstation.
+2. In the console enter:
+
+$Credentials = Get-Credential
+
+and provide administrative credentials.
+
+3. Enter the following command:
+
+$Session = New-PSSession -ConfigurationName Microsoft.Exchange -ConnectionUri https://outlook.office365.com/powershell-liveid/ -Credential $Credentials -Authentication Basic –AllowRedirection
+
+In this case there is no need to provide your CAS server address as the online Microsoft services address is fixed.
+
+4. Enter the command:
+
+Import-PSSession $Session
+
+After the console downloads administrative cmdlets you are ready to work.
+
+Similarly as before – once you finish working with the remote PowerShell session close it with the following command:
+
+Remove-PSSession $Session
+
+
+//Resolving typical connection problems
+
+Establishing the connection with the remote server using PowerShell is relatively easy. However, you need to check a couple of settings that might stop you when they are mis-configured:
+
+1. Make sure that you enter your administrative credentials properly.
+2.Check if your workstation allows running scripts. You can check the current policy by entering the following command in the PowerShell console:
+
+ Get-ExecutionPolicy
+ 
+If the policy shows that running scripts on the workstation is restricted, you can enable it with the following command (answer “Yes” to any questions that appear):
+
+ Set-ExecutionPolicy RemoteSigned
+ 
+3. Make sure that the TCP 80 port is open between your workstation and the target server.
+4. Check if you have the appropriate access rights (Remote Shell rights). To do so run the following command on the server:
+
+ Get-User Me@mydomain.com | select Name,RemotePowershellEnabled
+ 
+If the user lacks these rights use the following command to grant them:
+
+ Set-User Me@mydomain.com -RemotePowerShellEnabled $True
+ 
+Note: The Remote Shell right is by default enabled for all newly created users.
+
+Remote PowerShell is a great feature when you need to manage a number of servers simultaneously from one location and perform tasks that can be easily scripted, e.g. creation of users during Exchange migration.
