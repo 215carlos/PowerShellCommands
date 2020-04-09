@@ -1,0 +1,17 @@
+//Commands are to run in PowerShell ISE is recommended.
+//The commands will include a short explanation detailing what they can be used for
+//Most commands are easy to run. For more details on powershell refer to: 
+// https://docs.microsoft.com/en-us/powershell/scripting/overview?view=powershell-7
+
+
+//Pulls All AD users then filters for email address, then formats 3 columns and writes results to CSV.
+import-module activedirectory
+Get-ADUser -filter * -properties emailAddress | Select givenName,surName,emailAddress | Export-CSV c:\temp\userlist.csv -notype
+
+
+//Sets Permission for user X's calendar. It gives user Y access rights defined. In this case Reviewer
+Set-MailboxFolderPermission -Identity x@domain.com:\calendar -User y@domain.com -AccessRights Reviewer
+
+
+//returns the permissions for the Calendar folder
+Get-MailboxFolderPermission -Identity user@domain.com:\calendar
