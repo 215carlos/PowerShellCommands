@@ -9,6 +9,11 @@ import-module activedirectory
 Get-ADUser -filter * -properties emailAddress | Select givenName,surName,emailAddress | Export-CSV c:\temp\userlist.csv -notype
 
 
+//LastLogon for X user, replace user with the user you are searching for
+//link to blog: https://thesysadminchannel.com/get-last-logon-date-for-all-users-in-your-domain/
+Get-ADUser user -Properties lastLogon | Select samaccountname, @{Name="lastLogon";Expression={[datetime]::FromFileTime($_.'lastLogon')}}
+
+
 //Sets Permission for user X's calendar. It gives user Y access rights defined. In this case Reviewer
 Set-MailboxFolderPermission -Identity x@domain.com:\calendar -User y@domain.com -AccessRights Reviewer
 
