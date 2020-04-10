@@ -1,4 +1,4 @@
-//Commands are to run in PowerShell ISE is recommended.
+//Commands are to run in PowerShell. Poweshell ISE is recommended.
 //The commands will include a short explanation detailing what they can be used for
 //Most commands are easy to run. For more details on powershell refer to: 
 // https://docs.microsoft.com/en-us/powershell/scripting/overview?view=powershell-7
@@ -13,5 +13,24 @@ Get-ADUser -filter * -properties emailAddress | Select givenName,surName,emailAd
 Set-MailboxFolderPermission -Identity x@domain.com:\calendar -User y@domain.com -AccessRights Reviewer
 
 
-//returns the permissions for the Calendar folder
+//Returns the permissions for the Calendar folder
 Get-MailboxFolderPermission -Identity user@domain.com:\calendar
+
+
+//Exchange Online Powershell and will result in a CSV which shows an hourly breakdown of email sent / received in a given time period.
+//link to blog: https://misstech.co.uk/2018/01/23/report-email-traffic-by-the-hour/
+Get-MailTrafficReport -StartDate 01/14/2018 -EndDate 01/22/2018 -AggregateBy Hour -EventType GoodMail | select Date,Direction,MessageCount | Export-csv C:\temp\mailflowreport.csv
+
+
+//Export a list of all Primary SMTP addresses and aliases
+Get-Mailbox -ResultSize Unlimited |Select-Object DisplayName,PrimarySmtpAddress, @{Name=“EmailAddresses”;Expression={$_.EmailAddresses |Where-Object {$_.PrefixString -ceq “smtp”} | ForEach-Object {$_.SmtpAddress}}} | Export-CSV c:\exportsmtp.csv -NoTypeInformation
+
+
+
+//Message trace using PowerShell from Exchange Online Powershell output in Grid-View
+//link to blog: https://blogs.technet.microsoft.com/eopfieldnotes/2014/12/16/message-trace-the-powershell-way/
+$dateEnd = get-date 
+$dateStart = $dateEnd.AddHours(-48)
+Get-MessageTrace -StartDate $dateStart -EndDate $dateEnd | Select-Object Received, SenderAddress, RecipientAddress, Subject, Status, ToIP, FromIP, Size, MessageID, MessageTraceID | Out-GridView 
+
+
