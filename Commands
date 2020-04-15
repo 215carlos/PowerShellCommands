@@ -4,12 +4,12 @@
 // https://docs.microsoft.com/en-us/powershell/scripting/overview?view=powershell-7
 
 
-//Pulls All AD users then filters for email address, then formats 3 columns and writes results to CSV.
+//Pull All AD users then filters for email address, then formats 3 columns and writes results to CSV.
 import-module activedirectory
 Get-ADUser -filter * -properties emailAddress | Select givenName,surName,emailAddress | Export-CSV c:\temp\userlist.csv -notype
 
 
-/Pull smtp EmailAddresses (Aliases) for mailboxes and format so there are no duplicates names (displaynames)
+//Pull smtp EmailAddresses (Aliases) for mailboxes and format so there are no duplicates names (displaynames)
 Get-Mailbox -ResultSize Unlimited |Select-Object DisplayName,ServerName,PrimarySmtpAddress, @{Name=“EmailAddresses”;Expression={$_.EmailAddresses |Where-Object {$_.PrefixString -ceq “smtp”} | ForEach-Object {$_.SmtpAddress}}} | Export-csv C:\temp\name.csv
 
 
@@ -37,7 +37,6 @@ Get-MailTrafficReport -StartDate 01/14/2018 -EndDate 01/22/2018 -AggregateBy Hou
 
 //Export a list of all Primary SMTP addresses and aliases
 Get-Mailbox -ResultSize Unlimited |Select-Object DisplayName,PrimarySmtpAddress, @{Name=“EmailAddresses”;Expression={$_.EmailAddresses |Where-Object {$_.PrefixString -ceq “smtp”} | ForEach-Object {$_.SmtpAddress}}} | Export-CSV c:\exportsmtp.csv -NoTypeInformation
-
 
 
 //Message trace using PowerShell from Exchange Online Powershell output in Grid-View
